@@ -1,22 +1,44 @@
-from telegram import Bot, Update, WebAppInfo, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CommandHandler, CallbackContext, Updater
+from fastapi import FastAPI, Request, HTTPException
+import pandas as pd
+from datetime import datetime
 
-TOKEN = '7356286056:AAFAD2LgFe7SY26gxKW45BiMcXIEAf-L7PM'
+app = FastAPI()
+DATABASE_PATH = "IMBA_DP.xlsx"
 
-def start(update: Update, context: CallbackContext):
-    web_app = WebAppInfo(url="https://lokence333.github.io/Sber/")  # Укажи ссылку на своё веб-приложение
-    button = InlineKeyboardButton("Open Mini App", web_app=web_app)
-    keyboard = InlineKeyboardMarkup([[button]])
-    update.message.reply_text("Click the button to open the Mini App:", reply_markup=keyboard)
+# Чтение данных из Excel
+def load_data():
+    return pd.read_excel(DATABASE_PATH)
 
-def main():
-    updater = Updater(TOKEN)
-    dp = updater.dispatcher
+# Сохранение данных в Excel
+def save_data(df):
+    df.to_excel(DATABASE_PATH, index=False)
 
-    dp.add_handler(CommandHandler("start", start))
+# API: Получить доступные опросы
+@app.get("/surveys")
+def get_surveys():
+    data = load_data()
+    available_surveys = data[['SurveyID', 'SubSurvey']].drop_duplicates()
+    return available_surveys.to_dict(orient="records")
 
-    updater.start_polling()
-    updater.idle()
+# API: Записать результаты опроса
+@app.post("/submit")
+async def submit_survey(request: Request):
+    data = await request.json()
+    user_id = data["user_id"]
+    survey_id = data["survey_id"]
+    subsurvey = data["subsurvey"]
+    answer = data["answer"]
+    dp = data["dp"]
 
-if __name__ == "__main__":
-    main()
+    df = load_data()
+    new_entry = {
+        "UserID": user_id,
+        "SurveyID": survey_id,
+        "SubSurvey": subsurvey,
+        "Answer": answer,
+        "DP": dp,
+        "DateCompleted": datetime.now().strftime("%Y-%m-%d")
+    }
+    df = df.append(new_entry, ignore_index=True)
+    save_data(df)
+    return {"message": "Survey submitted successfully!"}
