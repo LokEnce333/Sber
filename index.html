@@ -16,7 +16,7 @@
 
   <script>
     async function loadSurveys() {
-      const response = await fetch('https://your-host.com/surveys');
+      const response = await fetch('https://lokence333.github.io/Sber/');
       const surveys = await response.json();
 
       const surveyList = document.getElementById('survey-list');
@@ -32,7 +32,7 @@
     }
 
     async function submitSurvey(surveyId, subSurveyId) {
-      const response = await fetch('https://your-host.com/submit', {
+      const response = await fetch('https://lokence333.github.io/Sber/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
