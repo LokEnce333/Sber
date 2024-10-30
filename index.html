@@ -57,13 +57,13 @@
     <div class="survey-block">
         <h2>Подопрос 1</h2>
         <p>Как вы оцениваете наш сервис?</p>
-        <button>Ответить</button>
+        <button onclick="goToSurvey()">Ответить</button>
     </div>
 
     <div class="survey-block">
         <h2>Подопрос 2</h2>
         <p>Какие функции вам нравятся больше всего?</p>
-        <button>Ответить</button>
+        <button onclick="goToSurvey()">Ответить</button>
     </div>
 
     <div class="survey-block">
@@ -79,5 +79,10 @@
         <p>Вы получили: <strong>50 DP</strong></p>
     </div>
     <img src="Frame 1 (5).png" width="360" height="640">
+    <script>
+      function goToSurvey() {
+          window.location.href = "survey.html";
+      }
+    </script>
 </body>
 </html>
