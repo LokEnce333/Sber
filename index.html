@@ -1,25 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Mini App</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини Опросник</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .survey-block {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            padding: 15px;
+        }
+        .progress-bar {
+            background: #4caf50;
+            height: 20px;
+            width: 0;
+            transition: width 0.3s;
+        }
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            height: 20px;
+            margin: 10px 0;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
 </head>
 <body>
-  <h1>Welcome to my Telegram Mini App!</h1>
-  <button id="closeBtn">Close App</button>
+    <h1>Мини Опросник</h1>
 
-  <script>
-    const tg = window.Telegram.WebApp;
+    <div class="survey-block">
+        <h2>Подопрос 1</h2>
+        <p>Как вы оцениваете наш сервис?</p>
+        <button>Ответить</button>
+    </div>
 
-    tg.expand();  // Развернуть на весь экран
+    <div class="survey-block">
+        <h2>Подопрос 2</h2>
+        <p>Какие функции вам нравятся больше всего?</p>
+        <button>Ответить</button>
+    </div>
 
-    document.getElementById("closeBtn").addEventListener("click", () => {
-      tg.close();  // Закрыть Web App
-    });
+    <div class="survey-block">
+        <h2>Ваш прогресс</h2>
+        <div class="progress-container">
+            <div class="progress-bar" style="width: 70%;"></div>
+        </div>
+        <p>Страйк: 5 дней</p>
+    </div>
 
-    console.log("Telegram WebApp initialized", tg.initData);
-  </script>
+    <div class="survey-block">
+        <h2>Полученные DP</h2>
+        <p>Вы получили: <strong>50 DP</strong></p>
+    </div>
 </body>
 </html>
