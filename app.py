@@ -1,44 +1,41 @@
-from fastapi import FastAPI, Request, HTTPException
-import pandas as pd
-from datetime import datetime
+from flask import Flask, request, jsonify, render_template
+from openpyxl import Workbook, load_workbook
+import os
 
-app = FastAPI()
-DATABASE_PATH = "IMBA_DP.xlsx"
+app = Flask(__name__)
 
-# Чтение данных из Excel
-def load_data():
-    return pd.read_excel(DATABASE_PATH)
+# Имя файла Excel, куда будут сохраняться ответы
+EXCEL_FILE = 'C:\Codes\IMBA_DP.xlsx'
 
-# Сохранение данных в Excel
-def save_data(df):
-    df.to_excel(DATABASE_PATH, index=False)
+# Если файл Excel не существует, создаём его и добавляем заголовок
+if not os.path.exists(EXCEL_FILE):
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.append(['Answer'])  # Заголовок для столбца
+    workbook.save(EXCEL_FILE)
 
-# API: Получить доступные опросы
-@app.get("/surveys")
-def get_surveys():
-    data = load_data()
-    available_surveys = data[['SurveyID', 'SubSurvey']].drop_duplicates()
-    return available_surveys.to_dict(orient="records")
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-# API: Записать результаты опроса
-@app.post("/submit")
-async def submit_survey(request: Request):
-    data = await request.json()
-    user_id = data["user_id"]
-    survey_id = data["survey_id"]
-    subsurvey = data["subsurvey"]
-    answer = data["answer"]
-    dp = data["dp"]
+@app.route('/survey')
+def survey():
+    return render_template('survey.html')
 
-    df = load_data()
-    new_entry = {
-        "UserID": user_id,
-        "SurveyID": survey_id,
-        "SubSurvey": subsurvey,
-        "Answer": answer,
-        "DP": dp,
-        "DateCompleted": datetime.now().strftime("%Y-%m-%d")
-    }
-    df = df.append(new_entry, ignore_index=True)
-    save_data(df)
-    return {"message": "Survey submitted successfully!"}
+@app.route('/submit', methods=['POST'])
+def submit():
+    data = request.get_json()
+    answer = data.get('answer')
+
+    if answer:
+        # Открываем Excel и добавляем ответ в новую строку
+        workbook = load_workbook(EXCEL_FILE)
+        sheet = workbook.active
+        sheet.append([answer])
+        workbook.save(EXCEL_FILE)
+        return jsonify({'status': 'success'}), 200
+    else:
+        return jsonify({'status': 'error', 'message': 'No answer provided'}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)
