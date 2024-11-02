@@ -5,35 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survey</title>
 </head>
-<body>
+<body style="background-color: white;">
     <h1>Please fill out the survey</h1>
     <form id="surveyForm">
         <label for="answer">Your answer:</label>
         <input type="text" id="answer" name="answer" required>
-        <button type="submit" onclick="window.location.href='/index'">Submit</button>
+        <button type="submit">Submit</button>
     </form>
-
     <script>
         document.getElementById('surveyForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const answer = document.getElementById('answer').value;
+            e.preventDefault();
+            const answer = document.getElementById('answer').value;
 
-        // Отправка данных на сервер
-        const response = await fetch('/submit', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ answer: answer }),
+            const response = await fetch('/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: answer }),
+            });
+
+            if (response.ok) {
+                alert('Your response has been recorded!');
+                const response = await fetch('/update_variable', { method: 'POST' });
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.message);
+                } else {
+                    alert('Failed to update variable. Try again!');
+                }
+                window.location.href = '/';
+            } else {
+                alert('Failed to submit. Try again!');
+            }
         });
-
-        if (response.ok) {
-            alert('Your response has been recorded!');
-            window.location.href = '/';  // Возвращаемся на главную страницу
-        } else {
-            alert('Failed to submit. Try again!');
-        }
-    });
     </script>
 </body>
 </html>

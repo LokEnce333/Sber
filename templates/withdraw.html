@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вывод DP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .withdraw-block {
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 10px 0;
+            padding: 15px;
+        }
+        .error-message {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        async function withdrawDP() {
+            const dpInput = document.getElementById('dp-input').value;
+            const response = await fetch('/withdraw_dp', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ dp: dpInput })
+            });
+            const data = await response.json();
+
+            const resultBlock = document.getElementById('result');
+            if (data.status === 'error') {
+                resultBlock.textContent = data.message;
+                resultBlock.classList.add('error-message');
+            } else {
+                resultBlock.textContent = `Вы вывели ${dpInput} DP`;
+                resultBlock.classList.remove('error-message');
+                setTimeout(() => window.location.href = '/', 2000); // Вернуться на index.html после 2 секунд
+            }
+        }
+    </script>
+</head>
+<body style="background-color: white;">
+    <h1>Вывод DP</h1>
+    
+    <div class="withdraw-block">
+        <h2>Введите количество DP для вывода</h2>
+        <input type="number" id="dp-input" min="1" required>
+    </div>
+    
+    <div class="withdraw-block" id="result"></div>
+
+    <div class="withdraw-block">
+        <button onclick="withdrawDP()">Вывести</button>
+    </div>
+</body>
+</html>

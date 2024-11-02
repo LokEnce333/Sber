@@ -34,6 +34,13 @@
             height: 20px;
             margin: 10px 0;
         }
+        .success-message {
+            color: green;
+            font-weight: bold;
+        }
+        .green-text {
+            color: green;
+        }
         button {
             display: block;
             width: 100%;
@@ -48,12 +55,65 @@
         button:hover {
             background: #0056b3;
         }
-
     </style>
-</head>
-<body background="1.png">
-    <h1>Мини Опросник</h1>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function() {
+    const response = await fetch('/check_variable');
+    const data = await response.json();
+    const progressBar = document.getElementById("progress-bar");
+    const days = document.getElementById("days");
 
+            // Устанавливаем прогресс на 100% при условии, что переменная равна 20
+            if (data.variable >= 1) {
+                progressBar.style.width = "20%";
+                days.textContent = "1 день";
+            } else {
+                progressBar.style.width = "0%"; // Иначе прогресс остается на 0%
+                days.textContent = "0 дней";
+            }
+
+    if (data.variable >= 1) {
+        // Пройден подопрос 1
+        const goToSurveyLink1 = document.querySelector(".survey-block:nth-child(2) a");
+        if (goToSurveyLink1) {
+            goToSurveyLink1.style.display = "none";
+        }
+        const questionTitle1 = document.querySelector(".survey-block:nth-child(2) h2");
+        if (questionTitle1) {
+            questionTitle1.classList.add("green-text");
+        }
+        const successMessage1 = document.createElement("p");
+        successMessage1.classList.add("success-message");
+        successMessage1.textContent = "ПОДОПРОС УСПЕШНО ПРОЙДЕН";
+        document.querySelector(".survey-block:nth-child(2)").appendChild(successMessage1);
+    }
+
+    if (data.variable >= 2) {
+        // Пройден подопрос 2
+        const goToSurveyLink2 = document.querySelector(".survey-block:nth-child(3) a");
+        if (goToSurveyLink2) {
+            goToSurveyLink2.style.display = "none";
+        }
+        const questionTitle2 = document.querySelector(".survey-block:nth-child(3) h2");
+        if (questionTitle2) {
+            questionTitle2.classList.add("green-text");
+        }
+        const successMessage2 = document.createElement("p");
+        successMessage2.classList.add("success-message");
+        successMessage2.textContent = "ПОДОПРОС УСПЕШНО ПРОЙДЕН";
+        document.querySelector(".survey-block:nth-child(3)").appendChild(successMessage2);
+    }
+
+    // Обновляем отображение DP
+    const dpDisplay = document.getElementById("data-DP");
+    if (dpDisplay) {
+        dpDisplay.textContent = `${data.DP} DP`;
+    }
+});
+    </script>
+</head>
+<body style="background-color: white;">
+    <h1>Мини Опросник</h1>
     <div class="survey-block">
         <h2>Подопрос 1</h2>
         <p>Как вы оцениваете наш сервис?</p>
@@ -69,15 +129,15 @@
     <div class="survey-block">
         <h2>Ваш прогресс</h2>
         <div class="progress-container">
-            <div class="progress-bar" style="width: 70%;"></div>
+            <div class="progress-bar" style="width: 70%;" id="progress-bar"></div>
         </div>
-        <p>Страйк: 5 дней</p>
+        <p>Страйк: <strong id="days">5 дней</strong></p>
     </div>
 
     <div class="survey-block">
         <h2>Полученные DP</h2>
-        <p>Вы получили: <strong>50 DP</strong></p>
+        <p>Вы получили: <strong id="data-DP">0 DP</strong></p>
     </div>
-    <img src="Frame 1 (5).png" width="360" height="640">
+    <button onclick="window.location.href='/withdraw'">Вывод DP</button> <!-- Новая кнопка -->
 </body>
 </html>
